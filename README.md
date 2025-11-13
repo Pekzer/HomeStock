@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # HomeStock
 =======
 # README generado por IA
@@ -101,4 +100,3 @@ HomeStock/
 ## 📄 Licencia
 
 MIT
->>>>>>> Stashed changes
