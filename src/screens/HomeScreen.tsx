@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation }: any) {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const loadProducts = async () => {
-    const data = await StorageService.getAllProducts();
+    const data = await StorageService.getProducts();
     setProducts(data);
   };
 
@@ -69,7 +69,7 @@ export default function HomeScreen({ navigation }: any) {
     });
 
   const handleDecrease = async (id: string) => {
-    const products = await StorageService.getAllProducts();
+    const products = await StorageService.getProducts();
     const product = products.find(p => p.id === id);
     if (product && product.quantity > 0) {
       product.quantity -= 1;
