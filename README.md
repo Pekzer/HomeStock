@@ -43,6 +43,6 @@ Descarga la APK desde [GitHub Releases](https://github.com/Pekzer/HomeStock/rele
 - **Filtro**: El botón rojo filtra productos con stock bajo
 
 
-**Desarrollado con ❤️ usando React Native & Expo**
+**Desarrollado usando React Native & Expo**
 
 
