@@ -1,0 +1,64 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup Expo
+      uses: expo/expo-github-action@v8
+      with:
+        expo-version: latest
+        token: ${{ secrets.EXPO_TOKEN }}
+
+    - name: Install EAS CLI
+      run: npm install -g eas-cli
+
+    - name: Configure EAS Build
+      run: eas build:configure
+
+    - name: Build APK
+      run: eas build --platform android --profile preview --non-interactive
+
+    - name: Download APK
+      run: |
+        BUILD_URL=$(eas build:list --platform android --limit 1 --json | jq -r '.[0].artifacts.buildUrl')
+        curl -L -o HomeStock-${{ github.ref_name }}.apk "$BUILD_URL"
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: HomeStock ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+
+    - name: Upload APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./HomeStock-${{ github.ref_name }}.apk
+        asset_name: HomeStock-${{ github.ref_name }}.apk
+        asset_content_type: application/vnd.android.package-archive
