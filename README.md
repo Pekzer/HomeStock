@@ -5,7 +5,7 @@ Una aplicación móvil y web para el control de inventario de artículos del hog
 ## 📥 Descargar APK
 
 ### Descarga 
-Descarga la APK desde [GitHub Releases](https://github.com/Pekzer/HomeStock/releases/latest) para acceso permanente.
+Descarga la APK desde [GitHub Releases](https://github.com/Pekzer/HomeStock/releases/latest) 
 
 ## 🎯 Características
 
