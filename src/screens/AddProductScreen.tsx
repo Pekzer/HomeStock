@@ -9,8 +9,8 @@ import {
   ScrollView,
   Platform
 } from 'react-native';
-import { Product } from '../types/Product';
-import { StorageService } from '../services/StorageService';
+import { Product } from '@/types/Product';
+import { StorageService } from '@/services/StorageService';
 
 export default function AddProductScreen({ navigation }: any) {
   const [name, setName] = useState('');

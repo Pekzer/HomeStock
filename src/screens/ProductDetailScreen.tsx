@@ -9,8 +9,8 @@ import {
   Platform,
   Alert
 } from 'react-native';
-import { Product } from '../types/Product';
-import { StorageService } from '../services/StorageService';
+import { Product } from '@/types/Product';
+import { StorageService } from '@/services/StorageService';
 
 export default function ProductDetailScreen({ route, navigation }: any) {
   const { product } = route.params as { product: Product };

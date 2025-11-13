@@ -8,11 +8,12 @@ import {
   Alert,
   RefreshControl,
   Platform,
-  TextInput
+  TextInput,
+  Linking
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Product } from '../types/Product';
-import { StorageService } from '../services/StorageService';
+import { Product } from '@/types/Product';
+import { StorageService } from '@/services/StorageService';
 
 export default function HomeScreen({ navigation }: any) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,6 +21,7 @@ export default function HomeScreen({ navigation }: any) {
   const [searchText, setSearchText] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'quantity' | 'relative'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
   const loadProducts = async () => {
     const data = await StorageService.getProducts();
@@ -49,6 +51,7 @@ export default function HomeScreen({ navigation }: any) {
 
   const filteredProducts = products
     .filter(p => p.name.toLowerCase().includes(searchText.toLowerCase()))
+    .filter(p => !showLowStockOnly || p.quantity <= p.minQuantity)
     .sort((a, b) => {
       let aVal, bVal;
       if (sortBy === 'name') {
@@ -111,17 +114,36 @@ export default function HomeScreen({ navigation }: any) {
     );
   };
 
+  const handleGitHubPress = () => {
+    Linking.openURL('https://github.com/Pekzer');
+  };
+
+  const toggleLowStockFilter = () => {
+    setShowLowStockOnly(!showLowStockOnly);
+  };
+
   const lowStockCount = products.filter(p => p.quantity <= p.minQuantity).length;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>HomeStock</Text>
-        {lowStockCount > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{lowStockCount}</Text>
-          </View>
-        )}
+        <TouchableOpacity
+          style={[styles.headerButton, styles.githubButton]}
+          onPress={handleGitHubPress}
+        >
+          <Text style={styles.githubButtonText}>?</Text>
+        </TouchableOpacity>
+
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>HomeStock</Text>
+          {lowStockCount > 0 && !showLowStockOnly && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{lowStockCount}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.headerSpacer} />
       </View>
 
       <View style={styles.searchContainer}>
@@ -148,18 +170,32 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={[styles.sortButtonText, sortBy === 'quantity' && styles.sortButtonTextActive]}>Cantidad {sortBy === 'quantity' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.sortButton, sortBy === 'relative' && styles.sortButtonActive]}
-          onPress={() => handleSortPress('relative')}
+          style={[styles.sortButton, showLowStockOnly && styles.lowStockFilterActive]}
+          onPress={toggleLowStockFilter}
         >
-          <Text style={[styles.sortButtonText, sortBy === 'relative' && styles.sortButtonTextActive]}>Stock {sortBy === 'relative' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}</Text>
+          <Text style={[styles.sortButtonText, showLowStockOnly && styles.lowStockFilterTextActive]}>
+            📉 {showLowStockOnly ? 'Todos' : 'Stock Bajo'}
+          </Text>
         </TouchableOpacity>
       </View>
       
       {filteredProducts.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No hay productos</Text>
+          <Text style={styles.emptyText}>
+            {products.length === 0 
+              ? 'No hay productos' 
+              : showLowStockOnly 
+                ? 'No hay productos con stock bajo' 
+                : 'No hay productos que coincidan con la búsqueda'
+            }
+          </Text>
           <Text style={styles.emptySubText}>
-            Toca el botón + para agregar tu primer producto
+            {products.length === 0 
+              ? 'Toca el botón + para agregar tu primer producto'
+              : showLowStockOnly
+                ? 'Todos los productos tienen stock suficiente'
+                : 'Intenta con otros términos de búsqueda'
+            }
           </Text>
         </View>
       ) : (
@@ -192,9 +228,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingTop: Platform.OS === 'ios' ? 50 : 40,
     paddingBottom: 15,
+    paddingHorizontal: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
@@ -209,6 +246,10 @@ const styles = StyleSheet.create({
         elevation: 4,
       },
     }),
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
@@ -381,5 +422,48 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
+  },
+  headerButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lowStockFilterButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    marginRight: 10,
+  },
+  headerButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+  },
+  headerButtonTextActive: {
+    color: '#ff4444',
+  },
+  githubButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  githubButtonText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  headerSpacer: {
+    width: 36, // Same width as github button for balance
+  },
+  lowStockFilterActive: {
+    backgroundColor: '#ff4444',
+    borderColor: '#ff4444',
+  },
+  lowStockFilterTextActive: {
+    color: '#fff',
   },
 });
