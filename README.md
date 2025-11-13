@@ -3,8 +3,6 @@
 =======
 # README generado por IA
 
-# HomeStock
-
 Una aplicación móvil y web para el control de inventario de artículos del hogar, desarrollada con React Native y Expo.
 
 ## 🎯 Características
