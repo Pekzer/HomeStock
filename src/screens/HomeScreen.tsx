@@ -11,6 +11,7 @@ import {
   TextInput,
   Linking
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Product } from '@/types/Product';
 import { StorageService } from '@/services/StorageService';
@@ -24,7 +25,69 @@ export default function HomeScreen({ navigation }: any) {
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
   const loadProducts = async () => {
-    const data = await StorageService.getProducts();
+    let data = await StorageService.getProducts();
+    
+    // Si estamos en web y no hay productos, agregar productos de ejemplo
+    if (Platform.OS === 'web' && data.length === 0) {
+      const sampleProducts: Product[] = [
+        {
+          id: 'sample-1',
+          name: 'Arroz',
+          quantity: 5,
+          minQuantity: 2,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'sample-2',
+          name: 'Leche',
+          quantity: 3,
+          minQuantity: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'sample-3',
+          name: 'Pan',
+          quantity: 1,
+          minQuantity: 3,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'sample-4',
+          name: 'Huevos',
+          quantity: 12,
+          minQuantity: 6,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'sample-5',
+          name: 'Café',
+          quantity: 0,
+          minQuantity: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'sample-6',
+          name: 'Azúcar',
+          quantity: 8,
+          minQuantity: 2,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ];
+      
+      // Guardar productos de ejemplo
+      for (const product of sampleProducts) {
+        await StorageService.saveProduct(product);
+      }
+      
+      data = sampleProducts;
+    }
+    
     setProducts(data);
   };
 
@@ -47,6 +110,32 @@ export default function HomeScreen({ navigation }: any) {
     setRefreshing(true);
     await loadProducts();
     setRefreshing(false);
+  };
+
+  const handleResetDemo = async () => {
+    if (Platform.OS !== 'web') return;
+    
+    Alert.alert(
+      'Resetear Demo',
+      '¿Estás seguro de que quieres resetear todos los productos y volver a cargar los datos de ejemplo?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Resetear',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Limpiar AsyncStorage
+              await AsyncStorage.clear();
+              // Recargar productos (esto activará la carga de productos de ejemplo)
+              await loadProducts();
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo resetear la demo');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const filteredProducts = products
@@ -216,6 +305,15 @@ export default function HomeScreen({ navigation }: any) {
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      {Platform.OS === 'web' && (
+        <TouchableOpacity
+          style={styles.resetButton}
+          onPress={handleResetDemo}
+        >
+          <Text style={styles.resetButtonText}>🔄 Reset</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -422,6 +520,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
+  },
+  resetButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: 30,
+    backgroundColor: '#ff6b6b',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  resetButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   headerButton: {
     paddingHorizontal: 12,

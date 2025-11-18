@@ -11,6 +11,12 @@ Descarga la APK desde [GitHub Releases](https://github.com/Pekzer/HomeStock/rele
 Accede a la aplicación directamente desde tu navegador:  
 [![Abrir en Web](https://img.shields.io/badge/Abrir%20en%20Web-HomeStock-blue?style=for-the-badge&logo=web)](https://pekzer.github.io/HomeStock)
 
+#### ✨ Funciones Exclusivas Web
+- **Productos de Demo**: La versión web incluye automáticamente productos de ejemplo para demostrar todas las funcionalidades
+- **Botón de Volver**: En la pantalla de detalles de productos, incluye un botón "← Volver" para navegación fácil
+- **Botón Reset Demo**: Permite limpiar todos los datos y recargar los productos de ejemplo
+- **Interfaz Optimizada**: Diseño adaptado específicamente para uso en navegador
+
 ## 🎯 Características
 
 - ✅ Agregar productos con nombre, cantidad y cantidad mínima
