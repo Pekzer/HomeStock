@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   Linking
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { Product } from '@/types/Product';
 import { StorageService } from '@/services/StorageService';
 
@@ -23,6 +23,8 @@ export default function HomeScreen({ navigation }: any) {
   const [sortBy, setSortBy] = useState<'name' | 'quantity' | 'relative'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+
+  const isFocused = useIsFocused();
 
   const loadProducts = async () => {
     let data = await StorageService.getProducts();
@@ -91,11 +93,11 @@ export default function HomeScreen({ navigation }: any) {
     setProducts(data);
   };
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    if (isFocused) {
       loadProducts();
-    }, [])
-  );
+    }
+  }, [isFocused]);
 
   const handleSortPress = (newSortBy: 'name' | 'quantity' | 'relative') => {
     if (sortBy === newSortBy) {
