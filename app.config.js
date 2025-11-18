@@ -14,7 +14,8 @@ module.exports = {
     },
     web: {
       favicon: "./assets/favicon.png",
-      bundler: "metro"
+      bundler: "metro",
+      output: "single"
     },
     extra: {
       eas: {
