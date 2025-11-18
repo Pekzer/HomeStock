@@ -50,7 +50,11 @@ export default function AddProductScreen({ navigation }: any) {
 
     try {
       await StorageService.saveProduct(newProduct);
-      navigation.goBack();
+      // Navegar directamente al inicio para asegurar actualización
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
     } catch (error) {
       if (Platform.OS === 'web') {
         window.alert('No se pudo guardar el producto');

@@ -53,7 +53,11 @@ export default function ProductDetailScreen({ route, navigation }: any) {
     try {
       await StorageService.saveProduct(updatedProduct);
       setIsEditing(false);
-      navigation.goBack();
+      // Navegar directamente al inicio para asegurar actualización
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
     } catch (error) {
       if (Platform.OS === 'web') {
         window.alert('No se pudo actualizar el producto');
@@ -64,9 +68,21 @@ export default function ProductDetailScreen({ route, navigation }: any) {
   };
 
   const handleDelete = (id: string, name: string) => {
-    const deleteConfirmed = () => {
-      StorageService.deleteProduct(id);
-      navigation.goBack();
+    const deleteConfirmed = async () => {
+      try {
+        await StorageService.deleteProduct(id);
+        // Navegar directamente al inicio para asegurar actualización
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      } catch (error) {
+        if (Platform.OS === 'web') {
+          window.alert('Error al eliminar el producto');
+        } else {
+          Alert.alert('Error', 'Error al eliminar el producto');
+        }
+      }
     };
 
     if (Platform.OS === 'web') {
@@ -103,6 +119,11 @@ export default function ProductDetailScreen({ route, navigation }: any) {
 
     try {
       await StorageService.saveProduct(updatedProduct);
+      // Navegar directamente al inicio para asegurar actualización
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
     } catch (error) {
       if (Platform.OS === 'web') {
         window.alert('No se pudo actualizar el producto');
