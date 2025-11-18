@@ -19,7 +19,11 @@ export default function AddProductScreen({ navigation }: any) {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Por favor ingresa un nombre');
+      if (Platform.OS === 'web') {
+        window.alert('Por favor ingresa un nombre');
+      } else {
+        Alert.alert('Error', 'Por favor ingresa un nombre');
+      }
       return;
     }
 
@@ -27,7 +31,11 @@ export default function AddProductScreen({ navigation }: any) {
     const minQty = parseInt(minQuantity) || 0;
 
     if (qty < 0 || minQty < 0) {
-      Alert.alert('Error', 'Las cantidades no pueden ser negativas');
+      if (Platform.OS === 'web') {
+        window.alert('Las cantidades no pueden ser negativas');
+      } else {
+        Alert.alert('Error', 'Las cantidades no pueden ser negativas');
+      }
       return;
     }
 
@@ -44,7 +52,11 @@ export default function AddProductScreen({ navigation }: any) {
       await StorageService.saveProduct(newProduct);
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo guardar el producto');
+      if (Platform.OS === 'web') {
+        window.alert('No se pudo guardar el producto');
+      } else {
+        Alert.alert('Error', 'No se pudo guardar el producto');
+      }
     }
   };
 

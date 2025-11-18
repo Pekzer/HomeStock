@@ -115,27 +115,39 @@ export default function HomeScreen({ navigation }: any) {
   const handleResetDemo = async () => {
     if (Platform.OS !== 'web') return;
     
-    Alert.alert(
-      'Resetear Demo',
-      '¿Estás seguro de que quieres resetear todos los productos y volver a cargar los datos de ejemplo?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Resetear',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Limpiar AsyncStorage
-              await AsyncStorage.clear();
-              // Recargar productos (esto activará la carga de productos de ejemplo)
-              await loadProducts();
-            } catch (error) {
-              Alert.alert('Error', 'No se pudo resetear la demo');
-            }
-          }
+    const resetConfirmed = async () => {
+      try {
+        // Limpiar AsyncStorage
+        await AsyncStorage.clear();
+        // Recargar productos (esto activará la carga de productos de ejemplo)
+        await loadProducts();
+      } catch (error) {
+        if (Platform.OS === 'web') {
+          window.alert('No se pudo resetear la demo');
+        } else {
+          Alert.alert('Error', 'No se pudo resetear la demo');
         }
-      ]
-    );
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('¿Estás seguro de que quieres resetear todos los productos y volver a cargar los datos de ejemplo?')) {
+        resetConfirmed();
+      }
+    } else {
+      Alert.alert(
+        'Resetear Demo',
+        '¿Estás seguro de que quieres resetear todos los productos y volver a cargar los datos de ejemplo?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Resetear',
+            style: 'destructive',
+            onPress: resetConfirmed
+          }
+        ]
+      );
+    }
   };
 
   const filteredProducts = products

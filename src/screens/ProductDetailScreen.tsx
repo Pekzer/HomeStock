@@ -22,7 +22,11 @@ export default function ProductDetailScreen({ route, navigation }: any) {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Por favor ingresa un nombre');
+      if (Platform.OS === 'web') {
+        window.alert('Por favor ingresa un nombre');
+      } else {
+        Alert.alert('Error', 'Por favor ingresa un nombre');
+      }
       return;
     }
 
@@ -30,7 +34,11 @@ export default function ProductDetailScreen({ route, navigation }: any) {
     const minQty = parseInt(minQuantity) || 0;
 
     if (qty < 0 || minQty < 0) {
-      Alert.alert('Error', 'Las cantidades no pueden ser negativas');
+      if (Platform.OS === 'web') {
+        window.alert('Las cantidades no pueden ser negativas');
+      } else {
+        Alert.alert('Error', 'Las cantidades no pueden ser negativas');
+      }
       return;
     }
 
@@ -47,26 +55,38 @@ export default function ProductDetailScreen({ route, navigation }: any) {
       setIsEditing(false);
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el producto');
+      if (Platform.OS === 'web') {
+        window.alert('No se pudo actualizar el producto');
+      } else {
+        Alert.alert('Error', 'No se pudo actualizar el producto');
+      }
     }
   };
 
   const handleDelete = (id: string, name: string) => {
-    Alert.alert(
-      'Eliminar Producto',
-      `¿Estás seguro de eliminar "${name}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            await StorageService.deleteProduct(id);
-            navigation.goBack();
+    const deleteConfirmed = () => {
+      StorageService.deleteProduct(id);
+      navigation.goBack();
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm(`¿Estás seguro de eliminar "${name}"?`)) {
+        deleteConfirmed();
+      }
+    } else {
+      Alert.alert(
+        'Eliminar Producto',
+        `¿Estás seguro de eliminar "${name}"?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Eliminar',
+            style: 'destructive',
+            onPress: deleteConfirmed
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const handleQuickUpdate = async (amount: number) => {
@@ -84,7 +104,11 @@ export default function ProductDetailScreen({ route, navigation }: any) {
     try {
       await StorageService.saveProduct(updatedProduct);
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el producto');
+      if (Platform.OS === 'web') {
+        window.alert('No se pudo actualizar el producto');
+      } else {
+        Alert.alert('Error', 'No se pudo actualizar el producto');
+      }
     }
   };
 
