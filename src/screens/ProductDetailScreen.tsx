@@ -101,6 +101,14 @@ export default function ProductDetailScreen({ route, navigation }: any) {
             <View style={styles.productHeader}>
               <Text style={styles.title}>{product.name}</Text>
               <View style={styles.headerButtons}>
+                {Platform.OS === 'web' && (
+                  <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                  >
+                    <Text style={styles.backButtonText}>← Volver</Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   style={styles.editButton}
                   onPress={() => setIsEditing(true)}
@@ -332,6 +340,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   deleteButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  backButton: {
+    backgroundColor: '#666',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  backButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
